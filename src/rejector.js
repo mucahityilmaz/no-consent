@@ -147,18 +147,43 @@
     else document.addEventListener('DOMContentLoaded', attachObserver, { once: true });
   };
 
-  // ---------- Config from bridge ----------
+  // Builds a one-shot report for the popup button. Forces handlers to run
+  // even if `enabled` is false, so the user can always trigger manually.
+  const runOnce = () => {
+    const ok = tryReject();
+    if (ok) return { status: 'ok', cmp: dismissedCMP };
+    const detected = [];
+    for (const d of detectOnly) {
+      try { if (d.test()) detected.push(d.name); } catch (_) { /* noop */ }
+    }
+    if (detected.length) return { status: 'detected-no-handler', cmps: detected };
+    return { status: 'no-cmp' };
+  };
+
+  // ---------- Messages from bridge ----------
   window.addEventListener('message', (ev) => {
     if (ev.source !== window) return;
     const d = ev.data;
-    if (!d || d.source !== 'no-consent' || d.type !== 'config') return;
-    debug = !!d.debug;
-    if (d.enabled && !enabled) {
-      enabled = true;
-      start();
-    } else if (!d.enabled) {
-      enabled = false;
-      log(`disabled on ${location.hostname}`);
+    if (!d || d.source !== 'no-consent') return;
+
+    if (d.type === 'config') {
+      debug = !!d.debug;
+      if (d.enabled && !enabled) {
+        enabled = true;
+        start();
+      } else if (!d.enabled) {
+        enabled = false;
+        log(`disabled on ${location.hostname}`);
+      }
+      return;
+    }
+
+    if (d.type === 'reject-now') {
+      const result = runOnce();
+      window.postMessage(
+        { source: 'no-consent', type: 'reject-result', requestId: d.requestId, result },
+        location.origin
+      );
     }
   });
 })();
