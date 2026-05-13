@@ -1,3 +1,5 @@
+[Türkçe](README.tr.md)
+
 # no-consent
 
 Cookie consent panels love to hide "Reject all" behind an endless vendor list. **no-consent** adds a **Disable all** button that flips every toggle — purpose consent, legitimate interest, special features, vendors — right in front of your eyes. You verify visually, then click the site's own Save button yourself.

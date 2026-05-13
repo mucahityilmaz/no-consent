@@ -14,6 +14,26 @@
   const TAG = '[no-consent]';
   const BTN_ID = 'no-consent-disable-button';
 
+  const TRANSLATIONS = {
+    en: {
+      disableAll: 'Disable all',
+      working:    'Working\u2026',
+      disabled:   (n) => `\u2713 Disabled ${n} switch${n === 1 ? '' : 'es'}`,
+      error:      (msg) => `\u2717 ${msg}`,
+      hideLabel:  'Hide for this page',
+      onCount:    (n, name) => `${n} on \u2022 ${name}`,
+    },
+    tr: {
+      disableAll: 'T\u00fcm\u00fcn\u00fc kapat',
+      working:    '\u0130\u015fleniyor\u2026',
+      disabled:   (n) => `\u2713 ${n} ge\u00e7i\u015f kapat\u0131ld\u0131`,
+      error:      (msg) => `\u2717 ${msg}`,
+      hideLabel:  'Bu sayfa i\u00e7in gizle',
+      onCount:    (n, name) => `${n} a\u00e7\u0131k \u2022 ${name}`,
+    },
+  };
+  const t = TRANSLATIONS[(navigator.language || '').split('-')[0].toLowerCase()] ?? TRANSLATIONS.en;
+
   const log = (...a) => console.log(TAG, ...a);
   const wait = (ms) => new Promise(r => setTimeout(r, ms));
   const visible = (el) => !!el && el.offsetParent !== null && el.getBoundingClientRect().height > 0;
@@ -157,10 +177,10 @@
       </style>
       <div class="wrap">
         <button class="btn" type="button">
-          <span class="label">Disable all</span>
+          <span class="label">${t.disableAll}</span>
           <span class="count"></span>
         </button>
-        <button class="close" type="button" aria-label="Hide for this page">×</button>
+        <button class="close" type="button" aria-label="${t.hideLabel}">\xd7</button>
       </div>
     `;
 
@@ -170,7 +190,7 @@
     const count = shadow.querySelector('.count');
     const close = shadow.querySelector('.close');
 
-    const setCount = (n) => { count.textContent = `${n} on • ${handler.name}`; };
+    const setCount = (n) => { count.textContent = t.onCount(n, handler.name); };
     setCount(initialCount);
     host.__update = setCount;
 
@@ -181,14 +201,17 @@
 
     btn.addEventListener('click', async () => {
       btn.disabled = true;
-      label.textContent = 'Working…';
+      label.textContent = t.working;
       count.textContent = '';
       // Block tick from rebuilding the button while we navigate sub-views.
       suppressTickUntil = Date.now() + 10_000;
 
       try {
         const n = await handler.flip();
-        wrap.innerHTML = `<div class="status ok">✓ Disabled ${n} switch${n === 1 ? '' : 'es'}</div>`;
+        const ok = document.createElement('div');
+        ok.className = 'status ok';
+        ok.textContent = t.disabled(n);
+        wrap.replaceChildren(ok);
         // Hold the success message for ~1.5s, then let tick decide what to
         // do — retire the button (no on-toggles) or rebuild it (user already
         // re-enabled something / navigated to a view with on-toggles).
@@ -199,7 +222,10 @@
           tick();
         }, 1500);
       } catch (e) {
-        wrap.innerHTML = `<div class="status err">✗ ${String(e).slice(0, 80)}</div>`;
+        const err = document.createElement('div');
+        err.className = 'status err';
+        err.textContent = t.error(String(e).slice(0, 80));
+        wrap.replaceChildren(err);
         console.warn(TAG, handler.name, 'flip error', e);
         suppressTickUntil = 0;
       }
