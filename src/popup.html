@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>no-consent</title>
+  <style>
+    :root {
+      color-scheme: dark light;
+      --bg: #0f1115;
+      --fg: #e7e9ee;
+      --muted: #8a909a;
+      --accent: #4f8cff;
+      --border: #23262d;
+    }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg);
+      font: 13px/1.4 -apple-system, "SF Pro Text", system-ui, sans-serif; }
+    body { width: 260px; padding: 14px 14px 12px; }
+    .title { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); margin: 0 0 6px; }
+    .host { font-size: 14px; font-weight: 600; word-break: break-all;
+      padding: 0 0 10px; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+    .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .label { font-size: 13px; }
+    .toggle { position: relative; width: 36px; height: 20px; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; inset: 0; background: #2a2e36; border-radius: 999px;
+      transition: background 120ms ease; cursor: pointer; }
+    .slider::before { content: ""; position: absolute; top: 2px; left: 2px;
+      width: 16px; height: 16px; background: #d0d3da; border-radius: 50%;
+      transition: transform 120ms ease; }
+    .toggle input:checked + .slider { background: var(--accent); }
+    .toggle input:checked + .slider::before { transform: translateX(16px); background: #fff; }
+    .hint { font-size: 11px; color: var(--muted); margin-top: 10px; }
+    .status { font-size: 11px; color: var(--muted); margin-top: 6px; min-height: 14px; }
+  </style>
+</head>
+<body>
+  <div class="title">no-consent</div>
+  <div class="host" id="host">—</div>
+  <div class="row">
+    <div class="label">Active on this site</div>
+    <label class="toggle">
+      <input type="checkbox" id="enabled">
+      <span class="slider"></span>
+    </label>
+  </div>
+  <div class="hint">Reload the page after toggling.</div>
+  <div class="status" id="status"></div>
+  <script src="popup.js"></script>
+</body>
+</html>
