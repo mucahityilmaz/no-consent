@@ -4,3 +4,4 @@ node_modules/
 .vscode/
 .idea/
 .claude/settings.local.json
+.playwright-mcp/

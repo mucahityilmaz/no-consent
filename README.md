@@ -1,38 +1,40 @@
 # no-consent
 
-Personal Chrome extension that auto-rejects every marketing and legitimate-interest cookie consent option on websites. Functional cookies only. No "reject all" button needed — it does it for you.
+Personal Chrome extension that adds a **Reject all consent** button — including legitimate interest — to cookie banners that don't have one. Click the button, the banner closes, all non-functional cookies are rejected.
 
 ## Install
 
-1. Open `chrome://extensions` in Chrome (or Brave / Edge / any Chromium browser ≥ 111).
+1. Open `chrome://extensions` in Chrome (or any Chromium browser ≥ 111).
 2. Toggle **Developer mode** on (top-right).
 3. Click **Load unpacked**.
 4. Pick this folder.
 
-The extension is now active on all sites by default.
+## How it works
 
-## Use
+When a supported consent banner appears, a small floating button shows up at the top of the page:
 
-- It runs automatically on page load — supported CMPs get rejected before the banner shows.
-- Click the toolbar icon for the popup:
-  - **Reject all consent** — runs a fresh rejection on the current tab and reports which CMP it hit (or "no banner found"). Use this if a banner pops up late or you want to verify it worked.
-  - **Auto-run on this site** — toggle off if the extension breaks something on a specific site. Reload after toggling.
+> **[ Reject all consent ]** *Google Funding Choices* &nbsp; ×
 
-## What it covers (v0.1)
+Click it. The extension opens the banner's "manage options" panel (if needed), unchecks every consent + legitimate-interest + special-feature toggle, and clicks "save" / "confirm" — all in one go. The banner closes and you see `✓ Rejected via …`.
 
-Programmatic reject via each CMP's own JS API:
+Click the **×** to hide the button for this page if you don't want to reject.
 
-| CMP | API used | Legitimate interest? |
-|---|---|---|
-| Didomi | `Didomi.setUserDisagreeToAll()` | Yes — covers both |
-| OneTrust | `OneTrust.RejectAll()` | Site-config dependent |
-| Cookiebot | `Cookiebot.decline()` | Yes |
-| Usercentrics | `UC_UI.denyAllConsents()` | Yes |
-| Osano | `Osano.cm.denyAll()` | Yes |
-| Sourcepoint | `_sp_.gdpr.rejectAll()` | Yes |
-| Klaro | `manager.changeAll(false) + saveAndApplyConsents()` | N/A (Klaro has no LI concept) |
+Nothing happens automatically — no banner action runs until you click.
 
-Detection-only (logged, no auto-reject yet — add a handler in `src/rejector.js` if you hit these often): TrustArc, CookieYes, Quantcast, generic TCF v2.2.
+## Supported CMPs
+
+| CMP | LI handling |
+|---|---|
+| Google Funding Choices | DOM: opens prefs panel, unchecks every purpose/LI/special-feature, confirms |
+| Didomi | `setUserDisagreeToAll()` — covers consent + LI |
+| OneTrust | `RejectAll()` (site-config dependent for LI) |
+| Cookiebot | `decline()` |
+| Usercentrics | `denyAllConsents()` |
+| Osano | `cm.denyAll()` |
+| Sourcepoint | `gdpr.rejectAll()` |
+| Klaro | `manager.changeAll(false) + saveAndApplyConsents()` |
+
+To add a new CMP: add a handler `{name, isVisible, reject}` to the `handlers` array in `src/rejector.js`. Use Playwright or DevTools on a real site to find the right selectors.
 
 ## Architecture
 
