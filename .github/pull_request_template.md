@@ -13,7 +13,7 @@
 ## Checklist
 
 - [ ] Selector tested on a real consent panel (not mocked)
-- [ ] `findOn()` is cheap — one `querySelectorAll` + filter, no async
+- [ ] `findOn()` is cheap - one `querySelectorAll` + filter, no async
 - [ ] `flip()` is async and returns the total count of toggles flipped
 - [ ] Sub-views handled (or confirmed not applicable for this CMP)
 - [ ] No JS-API calls that auto-save (`setUserDisagreeToAll()`, `rejectAll()`, etc.)

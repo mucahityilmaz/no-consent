@@ -1,9 +1,9 @@
-// MAIN-world content script — no-consent v0.3.0
+// MAIN-world content script - no-consent v0.4.0
 //
 // Watches for visible consent-preference toggles. When at least one is on,
 // shows a floating "Disable all" button. Clicking it flips every "on" toggle
 // to off across the entire consent flow (visible view + any sub-views like
-// vendor preferences) — and ends back where the user started. It never
+// vendor preferences) - and ends back where the user started. It never
 // closes the banner, never clicks save/confirm. The user verifies visually
 // and saves the changes themselves.
 
@@ -21,7 +21,7 @@
       disabled:   (n) => `\u2713 Disabled ${n} switch${n === 1 ? '' : 'es'}`,
       error:      (msg) => `\u2717 ${msg}`,
       hideLabel:  'Hide for this page',
-      onCount:    (n, name) => `${n} on \u2022 ${name}`,
+      onCount:    (n) => `(${n})`,
     },
     tr: {
       disableAll: 'T\u00fcm\u00fcn\u00fc kapat',
@@ -29,7 +29,7 @@
       disabled:   (n) => `\u2713 ${n} ge\u00e7i\u015f kapat\u0131ld\u0131`,
       error:      (msg) => `\u2717 ${msg}`,
       hideLabel:  'Bu sayfa i\u00e7in gizle',
-      onCount:    (n, name) => `${n} a\u00e7\u0131k \u2022 ${name}`,
+      onCount:    (n) => `(${n})`,
     },
   };
   const t = TRANSLATIONS[(navigator.language || '').split('-')[0].toLowerCase()] ?? TRANSLATIONS.en;
@@ -47,23 +47,30 @@
   };
 
   // Generic visible-on finder used by Google FC handler in both its current
-  // view and sub-views. <input> is opacity:0 — visibility lives on the parent
+  // view and sub-views. <input> is opacity:0 - visibility lives on the parent
   // .fc-preference-slider.
   const fcVisibleOn = () => Array.from(
     document.querySelectorAll('input[type="checkbox"][class*="fc-preference"]:checked')
   ).filter(i => visible(i.closest('.fc-preference-slider') || i.parentElement));
 
+  // Total on-toggles across all FC views (including hidden sub-views in the DOM).
+  // Used for the button label so the count matches what flip() will actually flip.
+  const fcTotalOn = () =>
+    document.querySelectorAll('input[type="checkbox"][class*="fc-preference"]:checked').length;
+
   // ---------- CMP handlers ----------
   // Each handler:
-  //   name    — display name shown in the button
-  //   findOn  — currently-on, visible toggle elements in the current view
-  //   flip    — async; flips every reachable on-toggle (visiting sub-views as
-  //             needed) and returns the total count flipped
+  //   findOn   - currently-on, visible toggle elements in the current view
+  //              (decides whether to show the button)
+  //   countAll - total on-toggles across all views; shown in the button label
+  //   flip     - async; flips every reachable on-toggle (visiting sub-views as
+  //              needed) and returns the total count flipped
   const handlers = [
     {
       name: 'Google Funding Choices',
 
       findOn: fcVisibleOn,
+      countAll: fcTotalOn,
 
       flip: async () => {
         // Flip whatever is visible RIGHT NOW.
@@ -190,7 +197,7 @@
     const count = shadow.querySelector('.count');
     const close = shadow.querySelector('.close');
 
-    const setCount = (n) => { count.textContent = t.onCount(n, handler.name); };
+    const setCount = (n) => { count.textContent = t.onCount(n); };
     setCount(initialCount);
     host.__update = setCount;
 
@@ -213,7 +220,7 @@
         ok.textContent = t.disabled(n);
         wrap.replaceChildren(ok);
         // Hold the success message for ~1.5s, then let tick decide what to
-        // do — retire the button (no on-toggles) or rebuild it (user already
+        // do - retire the button (no on-toggles) or rebuild it (user already
         // re-enabled something / navigated to a view with on-toggles).
         suppressTickUntil = Date.now() + 1500;
         setTimeout(() => {
@@ -244,7 +251,7 @@
     for (const h of handlers) {
       try {
         const on = h.findOn();
-        if (on && on.length > 0) { detected = h; onCount = on.length; break; }
+        if (on && on.length > 0) { detected = h; onCount = h.countAll ? h.countAll() : on.length; break; }
       } catch (_) { /* skip */ }
     }
 
@@ -269,7 +276,7 @@
 
   // Polling beats MutationObserver here because the `checked` property of an
   // <input type="checkbox"> doesn't fire attribute mutations when the user
-  // clicks it — so we'd miss state changes. 500ms is cheap and snappy enough
+  // clicks it - so we'd miss state changes. 500ms is cheap and snappy enough
   // for a single querySelectorAll per tick.
   const start = () => {
     tick();

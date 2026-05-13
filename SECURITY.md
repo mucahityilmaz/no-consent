@@ -2,7 +2,7 @@
 
 ## Permissions
 
-**no-consent** requests `<all_urls>` host permission. This is required because consent panels appear on any website — the extension must be able to run on every page you visit to detect when toggles are present.
+**no-consent** requests `<all_urls>` host permission. This is required because consent panels appear on any website - the extension must be able to run on every page you visit to detect when toggles are present.
 
 ## What the extension does
 
@@ -12,11 +12,11 @@
 
 ## What the extension does NOT do
 
-- Makes no network requests to any server — ever
+- Makes no network requests to any server - ever
 - Writes nothing to `chrome.storage`, `localStorage`, cookies, or any other storage
 - Collects no analytics, usage data, or telemetry
 - Contains no `eval()` or dynamically constructed code
-- Does not open, close, or submit consent panels — the user does that
+- Does not open, close, or submit consent panels - the user does that
 
 The full source is in [`src/rejector.js`](src/rejector.js) (~260 lines of plain JavaScript).
 

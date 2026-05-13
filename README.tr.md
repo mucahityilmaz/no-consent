@@ -2,7 +2,7 @@
 
 # no-consent
 
-Çerez onay panelleri "Tümünü reddet" seçeneğini genellikle sonsuz bir tedarikçi listesinin arkasına saklar. **no-consent**, gözlerinizin önünde her geçişi kapatan — amaç onayı, meşru menfaat, özel özellikler, tedarikçiler dahil — bir **Tümünü kapat** düğmesi ekler. Sonucu kendiniz görürsünüz, ardından sitenin kendi Kaydet düğmesine tıklarsınız.
+Çerez onay panelleri "Tümünü reddet" seçeneğini genellikle sonsuz bir tedarikçi listesinin arkasına saklar. **no-consent**, gözlerinizin önünde her geçişi kapatan - amaç onayı, meşru menfaat, özel özellikler, tedarikçiler dahil - bir **Tümünü kapat** düğmesi ekler. Sonucu kendiniz görürsünüz, ardından sitenin kendi Kaydet düğmesine tıklarsınız.
 
 Eklenti panelleri asla açmaz, başlıkları kapatmaz veya sizin adınıza hiçbir şeyi kaydetmez.
 
@@ -11,7 +11,7 @@ Eklenti panelleri asla açmaz, başlıkları kapatmaz veya sizin adınıza hiçb
 ## Özellikler
 
 - Tüm onay geçişlerini kapatır: amaç onayı, meşru menfaat, özel özellikler, tedarikçiler
-- Görünür, tek tıklamalı işlem — her geçişin kapandığını gerçek zamanlı olarak izlersiniz
+- Görünür, tek tıklamalı işlem - her geçişin kapandığını gerçek zamanlı olarak izlersiniz
 - Hiçbir şeyi göndermez, otomatik kaydetmez veya oturumunuza dokunmaz
 - Alt görünümleri destekler (Tedarikçi tercihleri sayfasına gider, hepsini kapatır, başladığınız yere döner)
 - Hafif: bağımlılık yok, derleme adımı yok, ~260 satır saf JavaScript
@@ -26,10 +26,10 @@ Eklenti panelleri asla açmaz, başlıkları kapatmaz veya sizin adınıza hiçb
 
 ## Nasıl Çalışır
 
-1. Bir siteyi ziyaret edin ve onay tercihler panelini açın (*Seçenekleri yönet* / *Özelleştir* / *Tercihler* — geçişlerin göründüğü ekran ne ise).
+1. Bir siteyi ziyaret edin ve onay tercihler panelini açın (*Seçenekleri yönet* / *Özelleştir* / *Tercihler* - geçişlerin göründüğü ekran ne ise).
 2. Geçişler ekranda algılandığında, sayfanın üst kısmında bir kayan düğme belirir:
 
-   > **[ Tümünü kapat ]** *48 açık • CMP Adı* &nbsp; ×
+   > **[ Tümünü kapat (48) ]** &nbsp; ×
 
 3. Tıklayın. Her "açık" geçiş gerçek zamanlı olarak kapanır. Panelin ayrı bir *Tedarikçi tercihleri* alt görünümü varsa eklenti oraya geçer, hepsini kapatır ve başladığınız yere döner.
 4. Düğme onaylar: `✓ 80 geçiş kapatıldı`
@@ -41,22 +41,22 @@ Görünümler arasında geçiş yaptığınızda sayım ~½ saniye içinde günc
 
 | CMP | İşlenen Geçişler |
 |---|---|
-| Google Funding Choices | `input[class*="fc-preference"]` — amaç onayı, amaç meşru menfaat, özel özellikler, tedarikçi onayı, tedarikçi meşru menfaat |
+| Google Funding Choices | `input[class*="fc-preference"]` - amaç onayı, amaç meşru menfaat, özel özellikler, tedarikçi onayı, tedarikçi meşru menfaat |
 
-Daha fazla CMP desteği için katkıda bulunabilirsiniz — bkz. [Katkıda Bulunma](#katkıda-bulunma).
+Daha fazla CMP desteği için katkıda bulunabilirsiniz - bkz. [Katkıda Bulunma](#katkıda-bulunma).
 
 ## Gizlilik ve Güvenlik
 
-- **Ağ isteği yok** — eklenti hiçbir zaman hiçbir sunucuyla iletişim kurmaz
-- **Depolama yok** — `chrome.storage`, `localStorage` veya çerezlere hiçbir şey yazılmaz
-- **Eval yok** — tüm kod statiktir, bu depodan yüklenir
+- **Ağ isteği yok** - eklenti hiçbir zaman hiçbir sunucuyla iletişim kurmaz
+- **Depolama yok** - `chrome.storage`, `localStorage` veya çerezlere hiçbir şey yazılmaz
+- **Eval yok** - tüm kod statiktir, bu depodan yüklenir
 - Herhangi bir sitede onay panellerini algılayabilmek için `<all_urls>` host iznine ihtiyaç duyar; yalnızca o anda bulunduğunuz sayfanın DOM'unu okur
 
 Ayrıntılar için [SECURITY.md](SECURITY.md) sayfasına bakın.
 
 ## Katkıda Bulunma
 
-Yeni bir onay yönetim platformu (CMP) desteği eklemek, katkıda bulunmanın temel yoludur — derleme araçları gerektirmez. Adım adım kılavuz için [CONTRIBUTING.md](CONTRIBUTING.md) dosyasına bakın.
+Yeni bir onay yönetim platformu (CMP) desteği eklemek, katkıda bulunmanın temel yoludur - derleme araçları gerektirmez. Adım adım kılavuz için [CONTRIBUTING.md](CONTRIBUTING.md) dosyasına bakın.
 
 Hata raporları ve CMP istekleri [GitHub Issues](../../issues) üzerinden memnuniyetle karşılanır.
 

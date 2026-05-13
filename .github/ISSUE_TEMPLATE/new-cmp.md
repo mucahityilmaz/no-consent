@@ -24,4 +24,4 @@ Does this CMP have a separate Vendor preferences / purposes view that also needs
 - [ ] Not sure
 
 **Additional context**
-<!-- Any other detail that might help — screenshots, CMP version, etc. -->
+<!-- Any other detail that might help - screenshots, CMP version, etc. -->
