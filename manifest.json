@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "no-consent",
+  "version": "0.1.0",
+  "description": "Auto-reject every marketing and legitimate-interest cookie consent. Functional cookies only.",
+  "permissions": ["storage", "activeTab"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_popup": "src/popup.html",
+    "default_title": "no-consent"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "run_at": "document_start",
+      "all_frames": false,
+      "js": ["src/bridge.js"]
+    },
+    {
+      "matches": ["<all_urls>"],
+      "run_at": "document_start",
+      "all_frames": false,
+      "world": "MAIN",
+      "js": ["src/rejector.js"]
+    }
+  ]
+}
