@@ -55,14 +55,6 @@ Tamam. Eklenti artık aktif. Bir web sitesinde çerez onay paneli açana kadar h
 
 Görünümler arasında geçiş yaptığınızda sayım ~½ saniye içinde güncellenir.
 
-## Test Edilen CMP'ler
-
-| CMP | İşlenen Geçişler |
-|---|---|
-| Google Funding Choices | `input[class*="fc-preference"]` - amaç onayı, amaç meşru menfaat, özel özellikler, tedarikçi onayı, tedarikçi meşru menfaat |
-
-Daha fazla CMP desteği için katkıda bulunabilirsiniz - bkz. [Katkıda Bulunma](#katkıda-bulunma).
-
 ## Gizlilik ve Güvenlik
 
 **Bu eklenti sizi takip edemez.** Sunucusu yoktur, hiçbir ağ isteği yapmaz ve hiçbir şey kaydetmez. Yalnızca o anda baktığınız sayfadaki çerez onay geçişlerini okur - sayfanın başka hiçbir yerini değil, başka sekme veya sitelere hiç bakmaz.
@@ -73,6 +65,14 @@ Daha fazla CMP desteği için katkıda bulunabilirsiniz - bkz. [Katkıda Bulunma
 - Herhangi bir sitede onay panellerini algılayabilmek için `<all_urls>` host iznine ihtiyaç duyar; yalnızca o anda bulunduğunuz sayfanın DOM'unu okur
 
 Ayrıntılar için [PRIVACY.md](PRIVACY.md) ve [SECURITY.md](SECURITY.md) sayfalarına bakın.
+
+## Test Edilen CMP'ler
+
+| CMP | İşlenen Geçişler |
+|---|---|
+| Google Funding Choices | `input[class*="fc-preference"]` - amaç onayı, amaç meşru menfaat, özel özellikler, tedarikçi onayı, tedarikçi meşru menfaat |
+
+"Tümünü reddet" butonu olmayan bir onay paneliyle mi karşılaştınız ve listede yok mu? [Issue açın](../../issues), birlikte ekleyelim.
 
 ## Katkıda Bulunma
 

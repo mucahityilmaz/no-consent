@@ -53,14 +53,6 @@ Done. The extension is now active. You won't see anything until you open a cooki
 
 The count updates within ~½ second as you switch views.
 
-## Tested CMPs
-
-| CMP | Toggles handled |
-|---|---|
-| Google Funding Choices | `input[class*="fc-preference"]` - purpose consent, LI, special features, vendor consent, vendor LI |
-
-More CMPs are welcome - see [Contributing](#contributing).
-
 ## Privacy & security
 
 **This extension cannot spy on you.** It has no servers, makes zero network requests, and stores nothing. It only reads the cookie toggle buttons on the page you're currently looking at - nothing else on that page, and nothing from any other tab or site.
@@ -71,6 +63,14 @@ More CMPs are welcome - see [Contributing](#contributing).
 - Requires `<all_urls>` host permission so it can detect consent panels on any site; it reads only the DOM of the page you're currently on
 
 See [PRIVACY.md](PRIVACY.md) and [SECURITY.md](SECURITY.md) for full detail.
+
+## Tested CMPs
+
+| CMP | Toggles handled |
+|---|---|
+| Google Funding Choices | `input[class*="fc-preference"]` - purpose consent, LI, special features, vendor consent, vendor LI |
+
+Hit a consent panel with no "Reject all" that isn't listed here? [Open an issue](../../issues) and let's add it.
 
 ## Contributing
 

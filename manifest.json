@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "no-consent",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "Adds a 'Disable all' button to cookie consent preference panels - flips every toggle off so you can verify and save yourself.",
   "host_permissions": ["<all_urls>"],
   "content_scripts": [
