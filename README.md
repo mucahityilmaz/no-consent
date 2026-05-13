@@ -19,10 +19,26 @@ The extension **never** opens panels, closes banners, or saves anything on your 
 
 ## Install
 
-1. Open `chrome://extensions` in Chrome (or any Chromium browser ≥ 111).
-2. Toggle **Developer mode** on (top-right).
-3. Click **Load unpacked**.
-4. Select this repository folder.
+Works in Chrome, Edge, Brave, and any Chromium-based browser.
+
+### Step 1 - Get the files
+
+**No git?** Click the green **Code** button at the top of this page, choose **Download ZIP**, and unzip it anywhere on your computer.
+
+**Using git:**
+```
+git clone https://github.com/mucahityilmaz/no-consent.git
+```
+
+### Step 2 - Load it into your browser
+
+1. Open a new tab and go to **chrome://extensions**
+2. Turn on **Developer mode** using the toggle in the top-right corner
+   *(This just lets you load extensions from your own computer - it's safe)*
+3. Click **Load unpacked**
+4. Select the folder you just unzipped or cloned - the one that contains `manifest.json`
+
+Done. The extension is now active. You won't see anything until you open a cookie consent panel on a website.
 
 ## How it works
 

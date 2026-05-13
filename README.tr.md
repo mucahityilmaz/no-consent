@@ -19,10 +19,26 @@ Eklenti panelleri asla açmaz, başlıkları kapatmaz veya sizin adınıza hiçb
 
 ## Kurulum
 
-1. Chrome'da (veya Chromium ≥ 111 tabanlı herhangi bir tarayıcıda) `chrome://extensions` sayfasını açın.
-2. Sağ üstteki **Geliştirici modu**nu açın.
-3. **Paketlenmemişi yükle**'ye tıklayın.
-4. Bu depo klasörünü seçin.
+Chrome, Edge, Brave ve Chromium tabanlı tüm tarayıcılarda çalışır.
+
+### 1. Adım - Dosyaları indirin
+
+**Git kullanmıyorsanız:** Bu sayfanın üstündeki yeşil **Code** düğmesine tıklayın, **Download ZIP** seçeneğini seçin ve zip dosyasını bilgisayarınızda istediğiniz bir yere çıkartın.
+
+**Git ile:**
+```
+git clone https://github.com/mucahityilmaz/no-consent.git
+```
+
+### 2. Adım - Tarayıcıya yükleyin
+
+1. Yeni bir sekme açın ve adres çubuğuna **chrome://extensions** yazın
+2. Sağ üst köşedeki **Geliştirici modu** düğmesini açın
+   *(Bu ayar sadece kendi bilgisayarınızdaki eklentileri yüklemenizi sağlar - güvenlidir)*
+3. **Paketlenmemişi yükle** düğmesine tıklayın
+4. Az önce zip'ten çıkarttığınız veya klonladığınız klasörü seçin - içinde `manifest.json` dosyası olan klasör
+
+Tamam. Eklenti artık aktif. Bir web sitesinde çerez onay paneli açana kadar herhangi bir şey görmezsiniz.
 
 ## Nasıl Çalışır
 
