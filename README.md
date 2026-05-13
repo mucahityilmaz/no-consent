@@ -63,6 +63,8 @@ More CMPs are welcome - see [Contributing](#contributing).
 
 ## Privacy & security
 
+**This extension cannot spy on you.** It has no servers, makes zero network requests, and stores nothing. It only reads the cookie toggle buttons on the page you're currently looking at - nothing else on that page, and nothing from any other tab or site.
+
 - **No network requests** - the extension never contacts any server
 - **No storage** - nothing is written to `chrome.storage`, `localStorage`, or cookies
 - **No eval** - all code is static, loaded from this repository

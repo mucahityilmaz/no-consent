@@ -65,6 +65,8 @@ Daha fazla CMP desteği için katkıda bulunabilirsiniz - bkz. [Katkıda Bulunma
 
 ## Gizlilik ve Güvenlik
 
+**Bu eklenti sizi takip edemez.** Sunucusu yoktur, hiçbir ağ isteği yapmaz ve hiçbir şey kaydetmez. Yalnızca o anda baktığınız sayfadaki çerez onay geçişlerini okur - sayfanın başka hiçbir yerini değil, başka sekme veya sitelere hiç bakmaz.
+
 - **Ağ isteği yok** - eklenti hiçbir zaman hiçbir sunucuyla iletişim kurmaz
 - **Depolama yok** - `chrome.storage`, `localStorage` veya çerezlere hiçbir şey yazılmaz
 - **Eval yok** - tüm kod statiktir, bu depodan yüklenir
