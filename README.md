@@ -1,4 +1,4 @@
-[Türkçe](README.tr.md)
+🇬🇧 English | [🇹🇷 Türkçe](README.tr.md)
 
 # no-consent
 
