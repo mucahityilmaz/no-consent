@@ -68,7 +68,7 @@ More CMPs are welcome - see [Contributing](#contributing).
 - **No eval** - all code is static, loaded from this repository
 - Requires `<all_urls>` host permission so it can detect consent panels on any site; it reads only the DOM of the page you're currently on
 
-See [SECURITY.md](SECURITY.md) for full detail.
+See [PRIVACY.md](PRIVACY.md) and [SECURITY.md](SECURITY.md) for full detail.
 
 ## Contributing
 

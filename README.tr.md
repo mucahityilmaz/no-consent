@@ -23,7 +23,9 @@ Chrome, Edge, Brave ve Chromium tabanlı tüm tarayıcılarda çalışır.
 
 ### 1. Adım - Dosyaları indirin
 
-**Git kullanmıyorsanız:** Bu sayfanın üstündeki yeşil **Code** düğmesine tıklayın, **Download ZIP** seçeneğini seçin ve zip dosyasını bilgisayarınızda istediğiniz bir yere çıkartın.
+**Git kullanmıyorsanız:** Aşağıdaki bağlantıya tıklayarak ZIP dosyasını indirin ve bilgisayarınızda istediğiniz bir yere çıkartın:
+
+**[no-consent'i ZIP olarak indir](https://github.com/mucahityilmaz/no-consent/archive/refs/heads/main.zip)**
 
 **Git ile:**
 ```
@@ -68,7 +70,7 @@ Daha fazla CMP desteği için katkıda bulunabilirsiniz - bkz. [Katkıda Bulunma
 - **Eval yok** - tüm kod statiktir, bu depodan yüklenir
 - Herhangi bir sitede onay panellerini algılayabilmek için `<all_urls>` host iznine ihtiyaç duyar; yalnızca o anda bulunduğunuz sayfanın DOM'unu okur
 
-Ayrıntılar için [SECURITY.md](SECURITY.md) sayfasına bakın.
+Ayrıntılar için [PRIVACY.md](PRIVACY.md) ve [SECURITY.md](SECURITY.md) sayfalarına bakın.
 
 ## Katkıda Bulunma
 

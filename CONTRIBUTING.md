@@ -100,6 +100,17 @@ Push it into the `handlers` array near the top of `src/rejector.js`.
 - No JS-API calls that auto-save (e.g. `Didomi.setUserDisagreeToAll()`, `cmp.rejectAll()`) - these bypass the visible-flip requirement
 - Keep `findOn()` fast: one `querySelectorAll` + a filter, nothing else
 
+## Adding a new language
+
+Translate `README.md` into a new file named `README.{lang}.md` (e.g. `README.de.md` for German).
+
+A few things to keep in mind:
+
+- **Install section:** Do not say "click the green Code button on this page." Translated READMEs are viewed as regular files on GitHub, not the repo homepage, so there is no Code button visible. Instead, link directly to the ZIP: `https://github.com/mucahityilmaz/no-consent/archive/refs/heads/main.zip`
+- Add a language switcher link at the very top of the new file pointing back to `README.md`.
+- Add a matching link to the new file at the top of `README.md` and `README.tr.md`.
+- CMP product names, selector strings, and code blocks stay in English.
+
 ## Submitting
 
 Open a pull request against `main`. Fill in the PR template checklist. Include the site URL you tested on so it can be verified.
