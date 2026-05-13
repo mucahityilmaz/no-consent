@@ -19,10 +19,10 @@ The extension never opens panels, closes banners, or saves anything on your beha
 
    > **[ Disable all ]** *6 on • Google Funding Choices* &nbsp; ×
 
-4. Click it. Every currently-on toggle flips to off — visibly, in front of you. The button updates to `✓ Disabled 6 switches`.
+4. Click it. Every currently-on toggle flips to off — visibly, in front of you. If the CMP has a *Vendor preferences* sub-view too, the extension briefly visits it, flips everything there as well, then comes back to where you started. The button updates to `✓ Disabled 80 switches`.
 5. You click the site's own *Save* / *Confirm choices* / *OK* button.
 
-Click the **×** to dismiss the button for this page load if you don't want to use it.
+The button always reflects what's currently on screen — switch views (vendor / purpose / etc.) and the count updates within ~½ second. Click the **×** to dismiss the button for this page load if you don't want to use it.
 
 ## Supported CMPs
 

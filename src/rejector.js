@@ -1,10 +1,11 @@
 // MAIN-world content script.
 //
 // Watches for visible consent-preference toggles. When at least one is on,
-// shows a floating "Disable all" button. Clicking it flips every visible
-// toggle to off — and that is ALL it does. It never opens preferences panels,
-// never clicks save/confirm, and never closes the banner. The user verifies
-// visually and saves the changes themselves.
+// shows a floating "Disable all" button. Clicking it flips every "on" toggle
+// to off across the entire consent flow (visible view + any sub-views like
+// vendor preferences) — and ends back where the user started. It never
+// closes the banner, never clicks save/confirm. The user verifies visually
+// and saves the changes themselves.
 
 (() => {
   if (window.__noConsentLoaded) return;
@@ -14,38 +15,100 @@
   const BTN_ID = 'no-consent-disable-button';
 
   const log = (...a) => console.log(TAG, ...a);
+  const wait = (ms) => new Promise(r => setTimeout(r, ms));
   const visible = (el) => !!el && el.offsetParent !== null && el.getBoundingClientRect().height > 0;
+  const waitFor = async (pred, timeout = 2000, step = 40) => {
+    const deadline = Date.now() + timeout;
+    while (Date.now() < deadline) {
+      try { if (pred()) return true; } catch (_) { /* keep trying */ }
+      await wait(step);
+    }
+    return false;
+  };
+
+  // Generic visible-on finder used by Google FC handler in both its current
+  // view and sub-views. <input> is opacity:0 — visibility lives on the parent
+  // .fc-preference-slider.
+  const fcVisibleOn = () => Array.from(
+    document.querySelectorAll('input[type="checkbox"][class*="fc-preference"]:checked')
+  ).filter(i => visible(i.closest('.fc-preference-slider') || i.parentElement));
 
   // ---------- CMP handlers ----------
   // Each handler:
-  //   name       — display name shown in the button
-  //   findOn     — returns an array of currently-on toggle elements that we'd flip.
-  //                Empty array = no work to do, button stays hidden.
-  //   flip       — called with the array from findOn. Must flip each element off.
-  //
-  // The button appears whenever ANY handler returns a non-empty findOn().
-  // Only the highest-priority matching handler is acted on.
+  //   name    — display name shown in the button
+  //   findOn  — currently-on, visible toggle elements in the current view
+  //   flip    — async; flips every reachable on-toggle (visiting sub-views as
+  //             needed) and returns the total count flipped
   const handlers = [
     {
-      // Google Funding Choices (TCF cmpId 300). Prefs panel uses native <input
-      // type="checkbox"> elements with class prefix "fc-preference-".
-      // Includes purposes, special features, and (in Vendor preferences) vendors.
       name: 'Google Funding Choices',
-      findOn: () => Array.from(document.querySelectorAll(
-        'input[type="checkbox"][class*="fc-preference"]:checked'
-      )).filter(i => {
-        // The actual <input> is hidden (opacity:0, 0x0); the visible UI is the
-        // .fc-preference-slider parent. Use that for the visibility check.
-        const slider = i.closest('.fc-preference-slider') || i.parentElement;
-        return visible(slider);
-      }),
-      flip: (els) => { els.forEach(el => el.click()); },
+
+      findOn: fcVisibleOn,
+
+      flip: async () => {
+        // Flip whatever is visible RIGHT NOW.
+        const flipVisible = () => {
+          const els = fcVisibleOn();
+          els.forEach(el => el.click());
+          return els.length;
+        };
+
+        const inMainView   = () => visible(document.querySelector('.fc-confirm-choices'));
+        const inVendorView = () => visible(document.querySelector('.fc-vendor-preferences-back'));
+
+        // Note the user's starting view so we can land back on it.
+        const startedInMain   = inMainView();
+        const startedInVendor = inVendorView();
+
+        let total = flipVisible();
+
+        // If we're on the main panel, visit Vendor preferences too.
+        if (startedInMain) {
+          const vendorsLink = document.querySelector('.fc-manage-vendors');
+          if (vendorsLink && visible(vendorsLink)) {
+            vendorsLink.click();
+            if (await waitFor(inVendorView, 2000)) {
+              await wait(120); // let toggles paint
+              total += flipVisible();
+              await wait(120);
+              const back = document.querySelector('.fc-vendor-preferences-back');
+              if (back) {
+                back.click();
+                await waitFor(inMainView, 2000);
+              }
+            }
+          }
+        }
+
+        // If we entered from vendor view, also hit the main panel and come back.
+        if (startedInVendor) {
+          const back = document.querySelector('.fc-vendor-preferences-back');
+          if (back) {
+            back.click();
+            if (await waitFor(inMainView, 2000)) {
+              await wait(120);
+              total += flipVisible();
+              await wait(120);
+              const vendorsLink = document.querySelector('.fc-manage-vendors');
+              if (vendorsLink && visible(vendorsLink)) {
+                vendorsLink.click();
+                await waitFor(inVendorView, 2000);
+              }
+            }
+          }
+        }
+
+        return total;
+      },
     },
   ];
 
   // ---------- button ----------
   let dismissedForThisLoad = false;
-  let recentlyClicked = false; // suppresses auto-removal during success display
+  // While the click handler is mid-flight (or showing the success message),
+  // the tick must not redraw the button on top of itself.
+  let suppressTickUntil = 0;
+  let currentHandler = null;
 
   const removeButton = () => {
     const el = document.getElementById(BTN_ID);
@@ -116,23 +179,29 @@
       removeButton();
     });
 
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       btn.disabled = true;
+      label.textContent = 'Working…';
+      count.textContent = '';
+      // Block tick from rebuilding the button while we navigate sub-views.
+      suppressTickUntil = Date.now() + 10_000;
+
       try {
-        const targets = handler.findOn();
-        const n = targets.length;
-        handler.flip(targets);
-        recentlyClicked = true;
+        const n = await handler.flip();
         wrap.innerHTML = `<div class="status ok">✓ Disabled ${n} switch${n === 1 ? '' : 'es'}</div>`;
-        // Hold the confirmation on screen long enough to read.
+        // Hold the success message for ~1.5s, then let tick decide what to
+        // do — retire the button (no on-toggles) or rebuild it (user already
+        // re-enabled something / navigated to a view with on-toggles).
+        suppressTickUntil = Date.now() + 1500;
         setTimeout(() => {
-          recentlyClicked = false;
-          // Don't force-remove — the tick will retire the button when
-          // findOn() is empty, OR re-show it if the user re-enabled something.
-        }, 1800);
+          suppressTickUntil = 0;
+          currentHandler = null; // force buildButton on next tick if needed
+          tick();
+        }, 1500);
       } catch (e) {
         wrap.innerHTML = `<div class="status err">✗ ${String(e).slice(0, 80)}</div>`;
         console.warn(TAG, handler.name, 'flip error', e);
+        suppressTickUntil = 0;
       }
     });
 
@@ -140,11 +209,9 @@
   };
 
   // ---------- main loop ----------
-  let currentHandler = null;
-
   const tick = () => {
     if (dismissedForThisLoad) return;
-    if (recentlyClicked) return; // keep the ✓ banner up
+    if (Date.now() < suppressTickUntil) return;
 
     let detected = null;
     let onCount = 0;
@@ -164,26 +231,28 @@
         (document.body || document.documentElement).appendChild(node);
         log(`${detected.name}: ${onCount} switch${onCount === 1 ? '' : 'es'} on`);
       } else if (existing.__update) {
-        // Same handler; just refresh the count.
         existing.__update(onCount);
       }
-    } else if (currentHandler) {
-      removeButton();
+    } else {
+      // No handler is active. Make sure no leftover button (e.g. from a
+      // previous success state, or an existing CMP that just closed) lingers.
+      if (document.getElementById(BTN_ID)) removeButton();
       currentHandler = null;
     }
   };
 
-  const startObserver = () => {
-    new MutationObserver(() => tick()).observe(
-      document.documentElement,
-      { childList: true, subtree: true, attributes: true, attributeFilter: ['checked', 'aria-checked', 'class'] }
-    );
+  // Polling beats MutationObserver here because the `checked` property of an
+  // <input type="checkbox"> doesn't fire attribute mutations when the user
+  // clicks it — so we'd miss state changes. 500ms is cheap and snappy enough
+  // for a single querySelectorAll per tick.
+  const start = () => {
     tick();
+    setInterval(tick, 500);
   };
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', startObserver, { once: true });
+    document.addEventListener('DOMContentLoaded', start, { once: true });
   } else {
-    startObserver();
+    start();
   }
 })();

@@ -10,14 +10,16 @@ Single user, not published. Optimize for the user's actual browsing — robustne
 
 ## The cardinal rule
 
-The extension **only flips visible toggles**. It must never:
+The user wants to **see** consent toggles flip and **save themselves**. The extension must never:
 
-- Open a preferences/manage-options panel
+- Open the *initial* prefs panel from the consent banner (user does that)
 - Close the banner
 - Click save / confirm / OK
 - Submit anything
 
-The user wants to see the toggles flip with their own eyes and then save themselves. Previous iterations did "the whole flow" via CMP JS APIs (e.g. `Didomi.setUserDisagreeToAll()`) and were rejected for exactly this reason — the user can't verify a one-shot reject visually. **Don't add JS-API-based handlers back.**
+What IS allowed (per the user's later refinement): traversing *within* the prefs flow on click — e.g. visiting *Vendor preferences*, flipping toggles, coming back. That's visible navigation the user is OK with, since they can verify by clicking through afterwards. Always **return to the user's starting view** so they see the same screen they clicked on.
+
+Don't add JS-API-based handlers (e.g. `Didomi.setUserDisagreeToAll()`) — those auto-save, breaking the see-it-yourself rule.
 
 ## Stack
 
@@ -29,9 +31,10 @@ The user wants to see the toggles flip with their own eyes and then save themsel
 ## Architecture
 
 `src/rejector.js`:
-- **handlers[]** — array of `{ name, findOn(), flip(els) }`. `findOn` returns currently-on toggle elements that are visible. `flip` flips them all off. Order matters: first match wins.
-- **Detection loop** — `MutationObserver` on `documentElement` (childList + subtree + attribute changes for `checked`, `aria-checked`, `class`). Each tick: if any handler's `findOn()` is non-empty, show/refresh the button; otherwise hide it.
-- **Button** — shadow-DOM-hosted (mode `open`, `all: initial`) with `z-index: 2147483647`. Shows `Disable all` plus a live count `N on • CMP-name`. On click: runs `flip()`, then displays `✓ Disabled N switches` for ~1.8s while a `recentlyClicked` flag suppresses the auto-remove tick.
+- **handlers[]** — array of `{ name, findOn(), flip() }`. `findOn` returns currently-on, visible toggle elements in the **current view** (used to decide whether to show the button and what count to display). `flip` is async and is responsible for flipping *everything reachable* — including hopping to sub-views, flipping, and returning. Returns the total count flipped.
+- **Detection loop** — `setInterval(tick, 500)`. A polling loop instead of MutationObserver, because `<input>.checked` flips don't fire attribute mutations and we'd miss user-driven toggle changes. 500ms is cheap.
+- **Suppression window** — `suppressTickUntil` timestamp blocks the tick from redrawing the button while `flip()` is mid-flight (sub-view navigation) and while the success message is displayed. Cleared after ~1.5s, at which point the next tick decides whether the button stays (re-enabled toggles), disappears (all off), or rebuilds (user navigated to a different view).
+- **Button** — shadow-DOM-hosted (mode `open`, `all: initial`) with `z-index: 2147483647`. Shows `Disable all` + `N on • CMP-name`. On click: `Working…` → success message `✓ Disabled N switches` for ~1.5s → tick decides next state.
 
 ## Adding a new CMP handler
 
