@@ -1,52 +1,63 @@
 # no-consent
 
-Personal Chrome extension that adds a **Disable all** button to cookie-consent preference panels. Click it and every visible "on" toggle (consent + legitimate interest + special features + vendors) flips to off. You verify with your own eyes, then click the site's own save / confirm button.
+Cookie consent panels love to hide "Reject all" behind an endless vendor list. **no-consent** adds a **Disable all** button that flips every toggle — purpose consent, legitimate interest, special features, vendors — right in front of your eyes. You verify visually, then click the site's own Save button yourself.
 
-The extension never opens panels, closes banners, or saves anything on your behalf.
+The extension **never** opens panels, closes banners, or saves anything on your behalf.
+
+---
+
+## Features
+
+- Flips all consent toggles: purpose consent, legitimate interest, special features, vendors
+- Visible, one-click operation — you watch every switch flip in real time
+- Never submits, auto-saves, or touches your session
+- Handles sub-views (navigates to Vendor preferences, flips everything, returns to your starting view)
+- Lightweight: no dependencies, no build step, ~260 lines of vanilla JS
+- Dismiss per page load with the × button if you don't need it
 
 ## Install
 
 1. Open `chrome://extensions` in Chrome (or any Chromium browser ≥ 111).
 2. Toggle **Developer mode** on (top-right).
 3. Click **Load unpacked**.
-4. Pick this folder.
+4. Select this repository folder.
 
 ## How it works
 
-1. You visit a site and see its consent banner.
-2. You click *Manage options* / *Customise* / *Preferences* yourself — whatever opens the panel with the toggles.
-3. When the toggles are on screen, a small floating button appears at the top of the page:
+1. Visit a site and open its consent preferences panel (*Manage options* / *Customise* / *Preferences* — whatever reveals the toggles).
+2. When toggles are detected on screen, a floating button appears at the top of the page:
 
-   > **[ Disable all ]** *6 on • Google Funding Choices* &nbsp; ×
+   > **[ Disable all ]** *48 on • CMP Name* &nbsp; ×
 
-4. Click it. Every currently-on toggle flips to off — visibly, in front of you. If the CMP has a *Vendor preferences* sub-view too, the extension briefly visits it, flips everything there as well, then comes back to where you started. The button updates to `✓ Disabled 80 switches`.
-5. You click the site's own *Save* / *Confirm choices* / *OK* button.
+3. Click it. Every "on" toggle flips to off — visibly, in real time. If the panel has a *Vendor preferences* sub-view, the extension navigates there, flips everything, then returns to where you started.
+4. The button confirms: `✓ Disabled 80 switches`
+5. Click the site's own *Save* / *Confirm choices* / *OK* button.
 
-The button always reflects what's currently on screen — switch views (vendor / purpose / etc.) and the count updates within ~½ second. Click the **×** to dismiss the button for this page load if you don't want to use it.
+The count updates within ~½ second as you switch views.
 
-## Supported CMPs
+## Tested CMPs
 
 | CMP | Toggles handled |
 |---|---|
-| Google Funding Choices | `input[class*="fc-preference"]` — purpose consent, purpose LI, special features, vendor consent, vendor LI |
+| Google Funding Choices | `input[class*="fc-preference"]` — purpose consent, LI, special features, vendor consent, vendor LI |
 
-That's it for v0.3. Other CMPs (OneTrust, Cookiebot, Didomi, etc.) need DOM-based handlers added — most of their JS APIs auto-save, which violates the "let me see it" rule. They'll get added as you hit them in real browsing.
+More CMPs are welcome — see [Contributing](#contributing).
 
-## Adding a new CMP
+## Privacy & security
 
-In `src/rejector.js`, push an entry into `handlers`:
+- **No network requests** — the extension never contacts any server
+- **No storage** — nothing is written to `chrome.storage`, `localStorage`, or cookies
+- **No eval** — all code is static, loaded from this repository
+- Requires `<all_urls>` host permission so it can detect consent panels on any site; it reads only the DOM of the page you're currently on
 
-```js
-{
-  name: 'YourCMP',
-  findOn: () => Array.from(document.querySelectorAll('YOUR_SELECTOR'))
-    .filter(i => /* still on */ && /* visible */),
-  flip: (els) => { els.forEach(el => el.click()); },
-}
-```
+See [SECURITY.md](SECURITY.md) for full detail.
 
-Use DevTools on a real consent panel to find a selector that catches every togglable switch (consent + LI + special features + vendors) but excludes any forced-on "strictly necessary" toggles.
+## Contributing
 
-## Architecture
+Adding support for a new consent management platform (CMP) is the primary way to contribute — a two-file change, no tooling required. See [CONTRIBUTING.md](CONTRIBUTING.md) for the step-by-step guide.
 
-See `CLAUDE.md`.
+Bug reports and CMP requests are welcome via [GitHub Issues](../../issues).
+
+## License
+
+[MIT](LICENSE)

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "no-consent",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Adds a 'Reject all' button — including legitimate interest — to cookie consent banners that don't have one.",
   "host_permissions": ["<all_urls>"],
   "content_scripts": [

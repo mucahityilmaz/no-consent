@@ -1,4 +1,4 @@
-// MAIN-world content script.
+// MAIN-world content script — no-consent v0.3.0
 //
 // Watches for visible consent-preference toggles. When at least one is on,
 // shows a floating "Disable all" button. Clicking it flips every "on" toggle
