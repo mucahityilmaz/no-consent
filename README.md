@@ -1,6 +1,8 @@
 # no-consent
 
-Personal Chrome extension that adds a **Reject all consent** button — including legitimate interest — to cookie banners that don't have one. Click the button, the banner closes, all non-functional cookies are rejected.
+Personal Chrome extension that adds a **Disable all** button to cookie-consent preference panels. Click it and every visible "on" toggle (consent + legitimate interest + special features + vendors) flips to off. You verify with your own eyes, then click the site's own save / confirm button.
+
+The extension never opens panels, closes banners, or saves anything on your behalf.
 
 ## Install
 
@@ -11,30 +13,39 @@ Personal Chrome extension that adds a **Reject all consent** button — includin
 
 ## How it works
 
-When a supported consent banner appears, a small floating button shows up at the top of the page:
+1. You visit a site and see its consent banner.
+2. You click *Manage options* / *Customise* / *Preferences* yourself — whatever opens the panel with the toggles.
+3. When the toggles are on screen, a small floating button appears at the top of the page:
 
-> **[ Reject all consent ]** *Google Funding Choices* &nbsp; ×
+   > **[ Disable all ]** *6 on • Google Funding Choices* &nbsp; ×
 
-Click it. The extension opens the banner's "manage options" panel (if needed), unchecks every consent + legitimate-interest + special-feature toggle, and clicks "save" / "confirm" — all in one go. The banner closes and you see `✓ Rejected via …`.
+4. Click it. Every currently-on toggle flips to off — visibly, in front of you. The button updates to `✓ Disabled 6 switches`.
+5. You click the site's own *Save* / *Confirm choices* / *OK* button.
 
-Click the **×** to hide the button for this page if you don't want to reject.
-
-Nothing happens automatically — no banner action runs until you click.
+Click the **×** to dismiss the button for this page load if you don't want to use it.
 
 ## Supported CMPs
 
-| CMP | LI handling |
+| CMP | Toggles handled |
 |---|---|
-| Google Funding Choices | DOM: opens prefs panel, unchecks every purpose/LI/special-feature, confirms |
-| Didomi | `setUserDisagreeToAll()` — covers consent + LI |
-| OneTrust | `RejectAll()` (site-config dependent for LI) |
-| Cookiebot | `decline()` |
-| Usercentrics | `denyAllConsents()` |
-| Osano | `cm.denyAll()` |
-| Sourcepoint | `gdpr.rejectAll()` |
-| Klaro | `manager.changeAll(false) + saveAndApplyConsents()` |
+| Google Funding Choices | `input[class*="fc-preference"]` — purpose consent, purpose LI, special features, vendor consent, vendor LI |
 
-To add a new CMP: add a handler `{name, isVisible, reject}` to the `handlers` array in `src/rejector.js`. Use Playwright or DevTools on a real site to find the right selectors.
+That's it for v0.3. Other CMPs (OneTrust, Cookiebot, Didomi, etc.) need DOM-based handlers added — most of their JS APIs auto-save, which violates the "let me see it" rule. They'll get added as you hit them in real browsing.
+
+## Adding a new CMP
+
+In `src/rejector.js`, push an entry into `handlers`:
+
+```js
+{
+  name: 'YourCMP',
+  findOn: () => Array.from(document.querySelectorAll('YOUR_SELECTOR'))
+    .filter(i => /* still on */ && /* visible */),
+  flip: (els) => { els.forEach(el => el.click()); },
+}
+```
+
+Use DevTools on a real consent panel to find a selector that catches every togglable switch (consent + LI + special features + vendors) but excludes any forced-on "strictly necessary" toggles.
 
 ## Architecture
 
